@@ -1,4 +1,6 @@
-package com.alekaue.brewer.service.event.cerveja;
+//não está sendo usado
+
+/*package com.alekaue.brewer.service.event.cerveja;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -18,3 +20,4 @@ public class CervejaListener {
 		fotoStorage.salvar(evento.getCerveja().getFoto());	
 	}
 }
+*/

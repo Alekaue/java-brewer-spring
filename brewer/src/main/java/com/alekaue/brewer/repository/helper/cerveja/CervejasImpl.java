@@ -18,9 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.alekaue.brewer.dto.CervejaDTO;
+import com.alekaue.brewer.dto.ValorItensEstoque;
 import com.alekaue.brewer.model.Cerveja;
 import com.alekaue.brewer.repository.filter.CervejaFilter;
 import com.alekaue.brewer.repository.paginacao.PaginacaoUtil;
+import com.alekaue.brewer.storage.FotoStorage;
 
 public class CervejasImpl implements CervejasQueries{
 
@@ -29,6 +31,9 @@ public class CervejasImpl implements CervejasQueries{
 	
 	@Autowired
 	private PaginacaoUtil paginaUtil;
+	
+	@Autowired
+	private FotoStorage fotoStotage;
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -42,6 +47,25 @@ public class CervejasImpl implements CervejasQueries{
 		
 		return new PageImpl<>(criteria.list(), pageable, total(filtro));
 	}
+	
+	@Override
+	public List<CervejaDTO> porSkuOuNome(String skuOuNome) {
+		String jpql = "select new com.alekaue.brewer.dto.CervejaDTO(codigo, sku, nome, origem, valor, foto) "
+				+ "from Cerveja where lower(sku) like lower(:skuOuNome) or lower(nome) like lower(:skuOuNome)";
+		List<CervejaDTO> cervejasFiltradas = manager.createQuery(jpql, CervejaDTO.class)
+				.setParameter("skuOuNome", skuOuNome + "%")
+				.getResultList();
+		cervejasFiltradas.forEach(c -> c.setUrlThumbnailFoto(fotoStotage.getUrl(FotoStorage.THUMBNAIL_PREFIX + c.getFoto())));
+		return cervejasFiltradas;
+	}
+	
+	@Override
+	public ValorItensEstoque valorItensEstoque() {
+		String query = "select new "
+				+ "com.alekaue.brewer.dto.ValorItensEstoque(sum(valor * quantidadeEstoque), "
+				+ "sum(quantidadeEstoque)) from Cerveja";
+		return manager.createQuery(query, ValorItensEstoque.class).getSingleResult();
+	}	
 
 	private Long total(CervejaFilter filtro) {
 		Criteria criteria = manager.unwrap(Session.class).createCriteria(Cerveja.class);
@@ -49,6 +73,7 @@ public class CervejasImpl implements CervejasQueries{
 		criteria.setProjection(Projections.rowCount());
 		return (Long) criteria.uniqueResult();
 	}
+	
 	
 	private void adicionarFiltro(CervejaFilter filtro, Criteria criteria) {
 		if(filtro != null){
@@ -84,16 +109,6 @@ public class CervejasImpl implements CervejasQueries{
 
 	private boolean isEstiloPresente(CervejaFilter filtro) {
 		return filtro.getEstilo() != null && filtro.getEstilo().getCodigo() != null;
-	}
-
-	@Override
-	public List<CervejaDTO> porSkuOuNome(String skuOuNome) {
-		String jpql = "select new com.alekaue.brewer.dto.CervejaDTO(codigo, sku, nome, origem, valor, foto) "
-				+ "from Cerveja where lower(sku) like lower(:skuOuNome) or lower(nome) like lower(:skuOuNome)";
-		List<CervejaDTO> cervejasFiltradas = manager.createQuery(jpql, CervejaDTO.class)
-				.setParameter("skuOuNome", skuOuNome + "%")
-				.getResultList();
-		return cervejasFiltradas;
 	}
 
 }

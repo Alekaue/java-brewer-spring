@@ -1,5 +1,6 @@
 package com.alekaue.brewer.controller;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,11 +21,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.alekaue.brewer.controller.page.PageWrapper;
 import com.alekaue.brewer.controller.validator.VendaValidator;
+import com.alekaue.brewer.dto.VendaMes;
+import com.alekaue.brewer.dto.VendaOrigem;
 import com.alekaue.brewer.mail.Mailer;
 import com.alekaue.brewer.model.Cerveja;
 import com.alekaue.brewer.model.ItemVenda;
@@ -187,7 +191,15 @@ public class VendasController {
 		return new ModelAndView("redirect:/vendas/" + venda.getCodigo());
 	}
 	
+	@GetMapping("/totalPorMes")
+	public @ResponseBody List<VendaMes> listarTotalVendaPorMes(){
+		return vendas.totalPorMes();
+	}
 	
+	@GetMapping("/porOrigem")
+	public @ResponseBody List<VendaOrigem> vendasPorNacionalidade() {
+		return this.vendas.totalPorOrigem();
+	}
 
 	private ModelAndView mvTabelaItensVenda(String uuid) {
 		ModelAndView mv = new ModelAndView("vendas/TabelaItensVenda");

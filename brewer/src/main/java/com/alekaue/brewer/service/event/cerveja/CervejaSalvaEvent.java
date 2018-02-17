@@ -1,4 +1,4 @@
-package com.alekaue.brewer.service.event.cerveja;
+/*package com.alekaue.brewer.service.event.cerveja;
 
 import org.springframework.util.StringUtils;
 
@@ -25,3 +25,4 @@ public class CervejaSalvaEvent {
 	}
 
 }
+*/

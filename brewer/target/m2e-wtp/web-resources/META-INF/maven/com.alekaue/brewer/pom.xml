@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   
   <modelVersion>4.0.0</modelVersion>
     
@@ -26,13 +28,13 @@
 		<servlet.version>3.1.0</servlet.version>
 		
 		<!-- Thymeleaf -->
-		<thymeleaf.version>3.0.0.RELEASE</thymeleaf.version>
+		<thymeleaf.version>3.0.1.RELEASE</thymeleaf.version>
 		
 		<!-- Bean Validation / Hibernate Validator -->
 		<hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
 		
 		<!-- Thymeleaf - Layout Dialect -->
-		<thymeleaf-layout-dialect.version>2.0.0</thymeleaf-layout-dialect.version>
+		<thymeleaf-layout-dialect.version>2.0.1</thymeleaf-layout-dialect.version>
 		
 		<!-- Logging -->
 		<log4j.version>2.6</log4j.version>
@@ -71,9 +73,23 @@
 		
 		<!-- Java Mail -->
 		<javax.mail.version>1.5.6</javax.mail.version>
+		
+		<!-- AWS SDK - S3 -->
+		<aws-java-sdk-s3.version>1.10.77</aws-java-sdk-s3.version>
+		
+		<!-- Apache Commons DBCP -->
+		<commons-dbcp2.version>2.1.1</commons-dbcp2.version>
+		
+		<!-- JasperReports -->
+		<jasperreports.version>6.4.3</jasperreports.version>
+		
+		<!-- JasperReports Fonts -->
+		<jasperreports-fonts.version>6.0.0</jasperreports-fonts.version>
 	</properties>
 
 	<build>
+		<finalName>${project.artifactId}</finalName>
+		
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -92,8 +108,53 @@
 					<driver>com.mysql.jdbc.Driver</driver>
 				</configuration>
 			</plugin>
-		</plugins>
+			
+				<plugin>
+		            <groupId>org.apache.maven.plugins</groupId>
+		            <artifactId>maven-dependency-plugin</artifactId>
+		            <version>2.3</version>
+		            <executions>
+		                <execution>
+		                    <phase>package</phase>
+		                    <goals><goal>copy</goal></goals>
+		                    <configuration>
+		                        <artifactItems>
+		                            <artifactItem>
+		                                <groupId>com.github.jsimone</groupId>
+		                                <artifactId>webapp-runner</artifactId>
+		                                <version>8.5.23.0</version>
+		                                <destFileName>webapp-runner.jar</destFileName>
+		                            </artifactItem>
+		                        </artifactItems>
+		                    </configuration>
+		                </execution>
+		            </executions>
+		        </plugin>
+			</plugins>
 	</build>
+	
+	<profiles>
+		<profile>
+			<id>local</id>
+		</profile>
+		
+		<profile>
+			<id>prod</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			
+			<dependencies>
+				<!-- MySQL Driver -->
+				<dependency>
+					<groupId>mysql</groupId>
+					<artifactId>mysql-connector-java</artifactId>
+					<version>${mysql-connector-java.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>			
+		</profile>
+	</profiles>
 
 	<dependencyManagement>
 		<dependencies>
@@ -197,14 +258,6 @@
     		<scope>compile</scope>
 		</dependency>
 		
-		<!-- MySQL Driver -->
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>${mysql-connector-java.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		
 		<!-- Spring Data JPA -->
 		<dependency>
 		    <groupId>org.springframework.data</groupId>
@@ -297,6 +350,38 @@
 			<version>${javax.mail.version}</version>
 			<scope>compile</scope>
 		</dependency>
+		
+		<!-- AWS SDK - S3 -->
+		<dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>${aws-java-sdk-s3.version}</version>
+        </dependency>
+		
+		<!-- Apache Commons DBCP -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<version>${commons-dbcp2.version}</version>		
+		</dependency>
+		
+		<!-- JasperReports -->
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>${jasperreports.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		
+		<!-- JasperReports Fonts-->
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-fonts</artifactId>
+			<version>${jasperreports-fonts.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		
+		
 	</dependencies>	
 	  
 </project>
